@@ -1281,6 +1281,11 @@ static esp_err_t _port_cmd_reset(port_t *port)
     port->state = HCD_PORT_STATE_RESETTING;
 
     // Place the bus into the reset state. If the port was previously enabled, a disabled event will occur after this
+#ifdef USB_DWC_FSLS_ONLY
+    // Force FS/LS only right before reset to prevent HS chirp. Must be set here
+    // because the hardware clears HCFG when transitioning to host mode.
+    usb_dwc_ll_hcfg_set_fsls_supp_only(port->hal->dev);
+#endif
     usb_dwc_hal_port_toggle_reset(port->hal, true);
     HCD_EXIT_CRITICAL();
     vTaskDelay(pdMS_TO_TICKS(RESET_HOLD_MS));
