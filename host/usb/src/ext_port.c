@@ -562,7 +562,9 @@ static void handle_port_connection(ext_port_t *ext_port)
         break;
     case USB_PORT_STATE_ENABLED:
         if (ext_port->dev_state == PORT_DEV_PRESENT) {
-            ext_port->flags.waiting_recycle = 1;
+            ESP_LOGW(EXT_PORT_TAG, "Port%d connection change while enabled (device reset?), connection=%d",
+                     ext_port->constant.port_num, port_has_connection(ext_port));
+            has_device = true;
         }
         break;
 
